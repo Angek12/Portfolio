@@ -1,254 +1,103 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
-import { useRef } from 'react'
-import { ExternalLink, Github, Code2 } from 'lucide-react'
+import { ExternalLink, Github, Globe, Sparkles, Sprout } from 'lucide-react'
+import { projects, site, type Project } from '@/data/site'
+import Reveal from './Reveal'
+import SectionHeading from './SectionHeading'
 
-interface Project {
-  id: number
-  title: string
-  description: string
-  techStack: string[]
-  githubUrl?: string
-  liveUrl?: string
-  featured: boolean
-  image: string
+const icons: Record<Project['id'], React.ReactNode> = {
+  agrohaven: <Sprout size={26} />,
+  'opportunity-finder': <Sparkles size={26} />,
+  'church-website': <Globe size={26} />,
 }
 
-const projects: Project[] = [
-  {
-    id: 1,
-    title: 'AgroHaven',
-    description: 'Sustainable farming platform using accessible technology to support agricultural resilience and food security.',
-    techStack: ['Next.js', 'TypeScript', 'IoT', 'MongoDB', 'AWS'],
-    githubUrl: 'https://github.com/angekevine/agrohaven',
-    liveUrl: 'https://agrohaven.com',
-    featured: true,
-    image: '/api/placeholder/400/300'
-  },
-  {
-    id: 2,
-    title: 'Climate Dashboard',
-    description: 'Real-time climate monitoring system with predictive analytics for decision-making and risk assessment.',
-    techStack: ['React', 'Python', 'Machine Learning', 'PostgreSQL'],
-    githubUrl: 'https://github.com/angekevine/climate-dashboard',
-    featured: false,
-    image: '/api/placeholder/400/300'
-  },
-  {
-    id: 3,
-    title: 'Youth Innovation Hub',
-    description: 'Digital platform connecting young innovators with resources, mentors, and opportunities.',
-    techStack: ['Vue.js', 'Node.js', 'Express', 'Docker'],
-    githubUrl: 'https://github.com/angekevine/youth-hub',
-    liveUrl: 'https://youthinnovation.org',
-    featured: false,
-    image: '/api/placeholder/400/300'
-  }
-]
-
 export default function Projects() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  }
-
-  const codeVariants = {
-    hidden: { 
-      opacity: 0,
-      x: -20,
-      filter: 'blur(4px)'
-    },
-    visible: { 
-      opacity: 1,
-      x: 0,
-      filter: 'blur(0px)',
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    },
-  }
-
-  const cardVariants = {
-    hidden: { 
-      opacity: 0,
-      scale: 0.9,
-      rotateY: -10
-    },
-    visible: { 
-      opacity: 1,
-      scale: 1,
-      rotateY: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    },
-  }
-
   return (
-    <section id="projects" className="py-20 px-4">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          ref={ref}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          variants={containerVariants}
-        >
-          <motion.h2
-            variants={codeVariants}
-            className="text-4xl md:text-5xl font-bold text-center mb-16"
-          >
-            <span className="gradient-text">Projects</span>
-          </motion.h2>
+    <section id="projects" className="section">
+      <div className="mx-auto max-w-6xl">
+        <SectionHeading
+          eyebrow="projects"
+          title="Projects"
+          subtitle="Real products built end to end: backend, APIs, databases, frontends and AI."
+        />
 
-          {/* Disorganized Layout Container */}
-          <div className="relative h-[800px] md:h-[600px]">
-            {projects.map((project, index) => {
-              const positions = [
-                { top: '8%', left: '5%', rotate: -12 },
-                { top: '3%', right: '8%', rotate: 8 },
-                { bottom: '12%', left: '35%', rotate: -5 }
-              ]
-              const pos = positions[index]
-              
-              return (
-                <motion.div
-                  key={project.id}
-                  variants={cardVariants}
-                  initial={{ opacity: 0, scale: 0.8, rotate: pos.rotate }}
-                  animate={{ opacity: 1, scale: 1, rotate: pos.rotate }}
-                  whileHover={{ 
-                    scale: 1.1,
-                    rotate: 0,
-                    z: 50,
-                    transition: { duration: 0.3 }
-                  }}
-                  className="absolute w-72 md:w-80"
-                  style={{
-                    top: pos.top,
-                    [pos.left ? 'left' : 'right']: pos.left || pos.right,
-                  }}
-                >
-                  {/* Layered Frame */}
-                  <div className="relative">
-                    {/* Background layers */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-lg transform rotate-3 scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg transform -rotate-2 scale-102" />
-                    
-                    {/* Main card */}
-                    <div className="relative bg-black/40 backdrop-blur-md border border-blue-500/50 rounded-lg overflow-hidden">
-                      {/* Project Image */}
-                      <div className="h-40 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 relative overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                            <Code2 size={24} className="text-black" />
-                          </div>
-                        </div>
-                        {project.featured && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 0.5 + index * 0.2 }}
-                            className="absolute top-2 right-2"
+        <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((p, i) => (
+            <li key={p.id} className={i === projects.length - 1 && projects.length % 2 === 1 ? 'md:col-span-2 lg:col-span-1' : ''}>
+              <Reveal delay={i * 0.1} className="h-full">
+                <article className="glass-card glass-card-hover flex h-full flex-col overflow-hidden">
+                  <div className="relative flex h-28 items-center justify-center bg-gradient-to-br from-blue-600/25 to-cyan-600/20">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-black">
+                      {icons[p.id]}
+                    </span>
+                    {p.featured && (
+                      <span className="absolute right-3 top-3 rounded-full bg-cyan-400 px-2.5 py-1 text-xs font-bold text-black">
+                        FEATURED
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-1 flex-col p-5">
+                    <p className="font-mono text-xs text-cyan-300">
+                      {p.role} · {p.period}
+                    </p>
+                    <h3 className="mt-1 text-xl font-bold text-white">{p.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-white/75">{p.description}</p>
+
+                    <ul className="mt-4 space-y-2 text-sm text-white/80">
+                      {p.highlights.map((h) => (
+                        <li key={h} className="flex gap-2">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400" />
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <ul className="mt-5 flex flex-wrap gap-2" aria-label={`${p.title} technologies`}>
+                      {p.tech.map((t) => (
+                        <li key={t} className="chip">
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+
+                    {(p.githubUrl || p.liveUrl) && (
+                      <div className="mt-auto flex flex-wrap gap-4 pt-5">
+                        {p.githubUrl && (
+                          <a
+                            href={p.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex min-h-[44px] items-center gap-1.5 font-mono text-sm text-blue-300 hover:text-cyan-300"
                           >
-                            <span className="px-2 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-black text-xs font-bold rounded-full">
-                              FEATURED
-                            </span>
-                          </motion.div>
+                            <Github size={16} /> Source code
+                          </a>
+                        )}
+                        {p.liveUrl && (
+                          <a
+                            href={p.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex min-h-[44px] items-center gap-1.5 font-mono text-sm text-blue-300 hover:text-cyan-300"
+                          >
+                            <ExternalLink size={16} /> Live demo
+                          </a>
                         )}
                       </div>
-
-                      <div className="p-4">
-                        <motion.h3 
-                          variants={codeVariants}
-                          className="text-lg font-bold text-blue-400 mb-2 font-mono"
-                        >
-                          {'<'}{project.title}{'/>'}
-                        </motion.h3>
-
-                        <motion.p 
-                          variants={codeVariants}
-                          className="text-white/70 text-sm mb-3 leading-relaxed font-mono"
-                        >
-                          {project.description}
-                        </motion.p>
-
-                        {/* Tech stack */}
-                        <motion.div 
-                          variants={codeVariants}
-                          className="mb-4"
-                        >
-                          <div className="text-xs text-blue-400/60 mb-1 font-mono">// tech</div>
-                          <div className="flex flex-wrap gap-1">
-                            {project.techStack.slice(0, 3).map((tech, techIndex) => (
-                              <span
-                                key={techIndex}
-                                className="px-2 py-0.5 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded text-xs font-mono"
-                              >
-                                {tech}
-                              </span>
-                            ))}
-                          </div>
-                        </motion.div>
-
-                        {/* Links */}
-                        <motion.div 
-                          variants={codeVariants}
-                          className="flex gap-3"
-                        >
-                          {project.githubUrl && (
-                            <a
-                              href={project.githubUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-1 text-blue-400 hover:text-cyan-400 transition-colors text-xs font-mono"
-                            >
-                              <Github size={14} />
-                              <span>src</span>
-                            </a>
-                          )}
-                          {project.liveUrl && (
-                            <a
-                              href={project.liveUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-1 text-blue-400 hover:text-cyan-400 transition-colors text-xs font-mono"
-                            >
-                              <ExternalLink size={14} />
-                              <span>live</span>
-                            </a>
-                          )}
-                        </motion.div>
-                      </div>
-                    </div>
+                    )}
                   </div>
-                </motion.div>
-              )
-            })}
-          </div>
+                </article>
+              </Reveal>
+            </li>
+          ))}
+        </ul>
 
-          {/* Code decoration */}
-          <motion.div
-            variants={codeVariants}
-            className="mt-8 text-center"
-          >
-            <div className="inline-block bg-black/50 border border-blue-500/30 rounded-lg p-4 font-mono text-sm backdrop-blur-sm">
-              <div className="text-blue-400">const</div>
-              <div className="text-white"> passion = "Building technology for real impact";</div>
-            </div>
-          </motion.div>
-        </motion.div>
+        <Reveal className="mt-10 text-center">
+          <a href={site.links.github} target="_blank" rel="noopener noreferrer" className="btn-outline">
+            <Github size={18} />
+            More on GitHub
+          </a>
+        </Reveal>
       </div>
     </section>
   )

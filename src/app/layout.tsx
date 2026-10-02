@@ -1,28 +1,52 @@
 import './globals.css'
+import type { Metadata, Viewport } from 'next'
+import { site } from '@/data/site'
 
-export const metadata = {
-  title: 'UWAYO Ange Kevine - Frontend Engineer & Innovator',
-  description: 'Tech for sustainability. Innovation with impact. Young innovator building practical technology solutions for agriculture and climate resilience.',
-  keywords: ['frontend engineer', 'UI/UX designer', 'sustainability', 'AgroHaven', 'innovation', 'climate resilience'],
-  authors: [{ name: 'UWAYO Ange Kevine' }],
+const description = `${site.title}. Building AI-powered applications and full-stack web platforms. Graduate of ${site.graduation.school} (${site.graduation.date}).`
+
+export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
+  title: `${site.name} — ${site.title}`,
+  description,
+  keywords: [
+    'software engineer',
+    'AI engineer',
+    'full-stack developer',
+    'React',
+    'TypeScript',
+    'Python',
+    'Java',
+    'Rwanda',
+    'Rwanda Coding Academy',
+    'AgroHaven',
+  ],
+  authors: [{ name: site.name }],
   openGraph: {
-    title: 'UWAYO Ange Kevine - Portfolio',
-    description: 'Tech for sustainability. Innovation with impact.',
+    title: `${site.name} — ${site.title}`,
+    description,
     type: 'website',
-    url: 'https://angekevine.com',
+    url: site.url,
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#0a0a0a',
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <body className="font-sans bg-background text-foreground min-h-screen">
-        {children}
-      </body>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        />
+      </head>
+      <body className="min-h-screen bg-background font-sans text-foreground">{children}</body>
     </html>
   )
 }

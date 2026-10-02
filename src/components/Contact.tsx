@@ -1,200 +1,109 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
-import { useRef } from 'react'
-import { Mail, Github, Linkedin, Twitter, Globe, Send } from 'lucide-react'
+import { useState } from 'react'
+import { Github, Linkedin, Mail, MapPin, Send } from 'lucide-react'
+import { site } from '@/data/site'
+import Reveal from './Reveal'
+import SectionHeading from './SectionHeading'
+
+const field =
+  'w-full rounded-lg border border-blue-500/30 bg-black/50 px-4 py-3 text-white placeholder-white/40 transition-colors focus:border-cyan-400 focus:outline-none'
 
 export default function Contact() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
+  // No backend needed: opens the visitor's email app with the message pre-filled,
+  // addressed to the email in src/data/site.ts.
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const subject = `Portfolio message from ${form.name}`
+    const body = `${form.message}\n\n— ${form.name} (${form.email})`
+    window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.6,
-      },
-    },
-  }
+  const update = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm((f) => ({ ...f, [key]: e.target.value }))
 
-  const socialLinks = [
-    {
-      icon: <Github size={24} />,
-      label: 'GitHub',
-      url: 'https://github.com/angeekevine',
-      color: 'hover:text-white hover:bg-gray-800'
-    },
-    {
-      icon: <Linkedin size={24} />,
-      label: 'LinkedIn',
-      url: 'https://linkedin.com/in/angekevine',
-      color: 'hover:text-white hover:bg-blue-600'
-    },
-    {
-      icon: <Twitter size={24} />,
-      label: 'Twitter',
-      url: 'https://twitter.com/angekevine',
-      color: 'hover:text-white hover:bg-sky-500'
-    },
-    {
-      icon: <Globe size={24} />,
-      label: 'Website',
-      url: 'https://angekevine.com',
-      color: 'hover:text-white hover:bg-accent'
-    }
+  const socials = [
+    { label: 'GitHub', href: site.links.github, icon: <Github size={22} /> },
+    ...(site.links.linkedin ? [{ label: 'LinkedIn', href: site.links.linkedin, icon: <Linkedin size={22} /> }] : []),
   ]
 
-  const handleEmailClick = () => {
-    window.location.href = 'mailto:angeekevinee@gmail.com'
-  }
-
   return (
-    <section id="contact" className="py-20 px-4">
-      <div className="max-w-4xl mx-auto">
-        <motion.div
-          ref={ref}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          variants={containerVariants}
-        >
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold text-center mb-16"
-          >
-            <span className="gradient-text">Get In Touch</span>
-          </motion.h2>
+    <section id="contact" className="section">
+      <div className="mx-auto max-w-5xl">
+        <SectionHeading
+          eyebrow="contact"
+          title="Get In Touch"
+          subtitle="Open to software and AI engineering opportunities, including internships."
+        />
 
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Contact Form */}
-            <motion.div
-              variants={itemVariants}
-              className="bg-black/30 border border-blue-500/30 rounded-lg p-8"
-            >
-              <h3 className="text-2xl font-semibold text-blue-400 mb-6">Send a Message</h3>
-              
-              <form className="space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-white/80 mb-2">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    className="w-full px-4 py-3 bg-black/50 border border-blue-500/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-blue-400 transition-colors"
-                    placeholder="Your Name"
-                  />
-                </div>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
+          <Reveal>
+            <form onSubmit={onSubmit} className="glass-card space-y-5 p-6 sm:p-8">
+              <h3 className="text-xl font-semibold text-cyan-300">Send a Message</h3>
+              <div>
+                <label htmlFor="name" className="mb-2 block text-sm font-medium text-white/80">
+                  Name
+                </label>
+                <input id="name" name="name" type="text" required autoComplete="name" value={form.name} onChange={update('name')} className={field} placeholder="Your name" />
+              </div>
+              <div>
+                <label htmlFor="email" className="mb-2 block text-sm font-medium text-white/80">
+                  Email
+                </label>
+                <input id="email" name="email" type="email" required autoComplete="email" value={form.email} onChange={update('email')} className={field} placeholder="you@example.com" />
+              </div>
+              <div>
+                <label htmlFor="message" className="mb-2 block text-sm font-medium text-white/80">
+                  Message
+                </label>
+                <textarea id="message" name="message" rows={4} required value={form.message} onChange={update('message')} className={`${field} resize-none`} placeholder="How can I help?" />
+              </div>
+              <button type="submit" className="btn-primary w-full">
+                <Send size={18} />
+                Send Message
+              </button>
+            </form>
+          </Reveal>
 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-foreground/80 mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="w-full px-4 py-3 bg-black/50 border border-blue-500/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-blue-400 transition-colors"
-                    placeholder="your.email@example.com"
-                  />
-                </div>
+          <Reveal delay={0.1}>
+            <div className="glass-card h-full space-y-6 p-6 sm:p-8">
+              <h3 className="text-xl font-semibold text-cyan-300">Let&apos;s Connect</h3>
+              <p className="leading-relaxed text-white/75">
+                I&apos;d love to talk about AI engineering, full-stack projects, or opportunities to work together.
+              </p>
 
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-foreground/80 mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={4}
-                    className="w-full px-4 py-3 bg-background border border-accent/20 rounded-lg text-foreground placeholder-foreground/50 focus:outline-none focus:border-accent transition-colors resize-none"
-                    placeholder="Let's collaborate on something amazing..."
-                  />
-                </div>
+              <a href={`mailto:${site.email}`} className="btn-outline w-full break-all">
+                <Mail size={20} className="shrink-0" />
+                {site.email}
+              </a>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all w-full flex items-center justify-center gap-2"
-                >
-                  <Send size={20} />
-                  Send Message
-                </motion.button>
-              </form>
-            </motion.div>
+              <p className="flex items-center gap-2 text-sm text-white/70">
+                <MapPin size={16} className="text-cyan-300" /> {site.location}
+              </p>
 
-            {/* Contact Info */}
-            <motion.div
-              variants={itemVariants}
-              className="space-y-8"
-            >
-              <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-8">
-                <h3 className="text-2xl font-semibold text-blue-400 mb-6">Let's Connect</h3>
-                
-                <p className="text-white/80 mb-8 leading-relaxed">
-                  I'm always excited to collaborate on innovative projects, especially those focused on 
-                  sustainability, agriculture technology, and empowering young innovators. 
-                  Feel free to reach out!
-                </p>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleEmailClick}
-                  className="px-6 py-3 border border-blue-600 text-blue-400 rounded-lg hover:bg-blue-600 hover:text-white transition-all w-full flex items-center justify-center gap-3 mb-8"
-                >
-                  <Mail size={20} />
-                  angeekevinee@gmail.com
-                </motion.button>
-
-                <div>
-                  <h4 className="text-lg font-semibold text-white mb-4">Follow My Journey</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {socialLinks.map((link, index) => (
-                      <motion.a
-                        key={link.label}
-                        href={link.url}
+              <div>
+                <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/60">Find me online</h4>
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {socials.map((s) => (
+                    <li key={s.label}>
+                      <a
+                        href={s.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`flex items-center gap-3 p-3 bg-black/50 border border-blue-500/30 rounded-lg transition-all ${link.color}`}
+                        className="flex min-h-[44px] items-center gap-3 rounded-lg border border-blue-500/30 bg-black/50 px-4 py-2 text-white/85 transition-all hover:-translate-y-0.5 hover:border-cyan-400 hover:text-cyan-300"
                       >
-                        {link.icon}
-                        <span className="text-sm font-medium">{link.label}</span>
-                      </motion.a>
-                    ))}
-                  </div>
-                </div>
+                        {s.icon}
+                        <span className="text-sm font-medium">{s.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              {/* Availability */}
-              <motion.div
-                variants={itemVariants}
-                className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-lg p-6 text-center"
-              >
-                <h4 className="text-lg font-semibold text-blue-400 mb-2">Open to Opportunities</h4>
-                <p className="text-white/80">
-                  Available for freelance projects, collaborations, and speaking engagements
-                </p>
-              </motion.div>
-            </motion.div>
-          </div>
-        </motion.div>
+            </div>
+          </Reveal>
+        </div>
       </div>
     </section>
   )
